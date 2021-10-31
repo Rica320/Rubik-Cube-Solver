@@ -77,15 +77,16 @@ RubikCube::RubikCube() : GameEngine(1920.0f, 1080.0f, "Rubik Solver"){ // TODO: 
 }
 
 char RubikCube::mapNormalToColor(const vec3d& normal) const{
-    if(normal.x < 0.0f)
+
+    if(normal.x <= -1.0f)
         return 'R';
-    else if(normal.x > 0.0f)
+    else if(normal.x >= 1.0f)
         return 'O';
-    else if(normal.y > 0.0f)
+    else if(normal.y >= 1.0f)
         return 'G';
-    else if(normal.y < 0.0f)
+    else if(normal.y <= -1.0f)
         return 'B';
-    else if(normal.z < 0.0f)
+    else if(normal.z <= -1.0f)
         return 'W';
     else
         return 'Y';
@@ -97,6 +98,7 @@ void RubikCube::createFaces() {
         for (int j=0; j < 3; j++) {
             for (int k=0; k < 3; k++) {
 
+                /*
                 if (i == 0) {
                     Face aFace{ triangle{ 0.0f + j, 0.0f + k, 0.0f + i, 1 ,    0.0f + j, 1.0f + k, 0.0f + i, 1,    1.0f + j, 1.0f + k, 0.0f + i ,1 },
                                 triangle{ 0.0f + j, 0.0f + k, 0.0f + i, 1 ,    1.0f + j, 1.0f + k, 0.0f + i, 1,    1.0f + j, 0.0f + k, 0.0f + i ,1 } };
@@ -152,6 +154,67 @@ void RubikCube::createFaces() {
 
                     vFaces.push_back(aFace);
                 }
+                 */
+                // TODO: SOMETHING IS WRONG ABOVE
+
+
+
+               {
+                    Face aFace{ triangle{ 0.0f + j, 0.0f + k, 0.0f + i, 1 ,    0.0f + j, 1.0f + k, 0.0f + i, 1,    1.0f + j, 1.0f + k, 0.0f + i ,1 },
+                                triangle{ 0.0f + j, 0.0f + k, 0.0f + i, 1 ,    1.0f + j, 1.0f + k, 0.0f + i, 1,    1.0f + j, 0.0f + k, 0.0f + i ,1 } };
+
+                    aFace.id = cubeMapping[i][j][k];
+                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
+
+                    vFaces.push_back(aFace);
+
+                }  {
+                    Face aFace{ triangle{ 1.0f + j, 0.0f + k, 1.0f + i, 1 ,    1.0f + j, 1.0f + k, 1.0f + i, 1,    0.0f + j, 1.0f + k, 1.0f + i ,1 },
+                                triangle{ 1.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 1.0f + k, 1.0f + i, 1,    0.0f + j, 0.0f + k, 1.0f + i ,1 } };
+
+                    aFace.id = cubeMapping[i][j][k];
+                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
+
+                    vFaces.push_back(aFace);
+
+                }
+
+               {
+                    Face aFace{ triangle{ 1.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 0.0f + k, 1.0f + i, 1,    0.0f + j, 0.0f + k, 0.0f + i ,1 },
+                                triangle{ 1.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 0.0f + k, 0.0f + i, 1,    1.0f + j, 0.0f + k, 0.0f + i ,1 } };
+
+                    aFace.id = cubeMapping[i][j][k];
+                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
+
+                    vFaces.push_back(aFace);
+                }  {
+                    Face aFace{ triangle{ 0.0f + j, 1.0f + k, 0.0f + i, 1 ,    0.0f + j, 1.0f + k, 1.0f + i, 1,    1.0f + j, 1.0f + k, 1.0f + i ,1 },
+                                triangle{ 0.0f + j, 1.0f + k, 0.0f + i, 1 ,    1.0f + j, 1.0f + k, 1.0f + i, 1,    1.0f + j, 1.0f + k, 0.0f + i ,1 } };
+
+                    aFace.id = cubeMapping[i][j][k];
+                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
+
+                    vFaces.push_back(aFace);
+                }
+
+                {
+                    Face aFace{ triangle{ 0.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 1.0f + k, 1.0f + i, 1,    0.0f + j, 1.0f + k, 0.0f + i ,1 },
+                                triangle{ 0.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 1.0f + k, 0.0f + i, 1,    0.0f + j, 0.0f + k, 0.0f + i ,1 } };
+
+                    aFace.id = cubeMapping[i][j][k];
+                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
+
+                    vFaces.push_back(aFace);
+                } {
+                    Face aFace{ triangle{ 1.0f + j, 0.0f + k, 0.0f + i, 1 ,    1.0f + j, 1.0f + k, 0.0f + i, 1,    1.0f + j, 1.0f + k, 1.0f + i ,1 },
+                                triangle{ 1.0f + j, 0.0f + k, 0.0f + i, 1 ,    1.0f + j, 1.0f + k, 1.0f + i, 1,    1.0f + j, 0.0f + k, 1.0f + i ,1 } };
+
+                    aFace.id = cubeMapping[i][j][k];
+                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
+
+                    vFaces.push_back(aFace);
+                }
+
             }
         }
     }
@@ -161,34 +224,38 @@ void RubikCube::createFaces() {
 vec4d RubikCube::getColor(char color) {
     switch (color) {
         case 'W':
-            return vec4d{0.0f,0.0f,0.0f,1.0f};
-            break;
+            return vec4d{1.0f,1.0f,1.0f,1.0f};
         case 'R':
             return vec4d{1.0f,0.0f,0.0f,1.0f};
-            break;
         case 'O':
             return vec4d{1.0f,0.647f,0.0f,1.0f};
-            break;
         case 'Y':
             return vec4d{1.0f,1.0f,0.0f,1.0f};
-            break;
         case 'B':
             return vec4d{0.0f,0.0f,1.0f,1.0f};
-            break;
         case 'G':
             return vec4d{0.0f,1.0f,0.0f,1.0f};
-            break;
+        default:
+            return vec4d{1.0f,1.0f,1.0f,1.0f};
     }
-    return vec4d{0.0f,0.0f,0.0f,1.0f}; // TODO: throw exception
+    // TODO: throw exception
 }
 
 void RubikCube::drawTriangle(const triangle &tri) {
-    GameEngine::drawTriangle(tri);
+
+    // draw triangle
+    glBegin(GL_TRIANGLES);
+    glColor4f(tri.col.R, tri.col.G, tri.col.B, tri.col.A);
+    glVertex2f(tri.p[0].x, tri.p[0].y); // the triangle will have to have the information of TexCoords
+    glVertex2f(tri.p[1].x, tri.p[1].y); // every cube will have a texture passed to the function
+    glVertex2f(tri.p[2].x, tri.p[2].y);
+    glEnd();
+    glFlush();
 
     //drawing lines
     glLineWidth(1.0);
     glBegin(GL_LINES);
-    glColor4f(tri.col.R, tri.col.G, tri.col.B, tri.col.A);
+    glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
     glVertex2f(tri.p[0].x, tri.p[0].y); glVertex2f(tri.p[1].x, tri.p[1].y);
     glVertex2f(tri.p[1].x, tri.p[1].y); glVertex2f(tri.p[2].x, tri.p[2].y);
     glVertex2f(tri.p[2].x, tri.p[2].y); glVertex2f(tri.p[0].x, tri.p[0].y);
@@ -216,7 +283,8 @@ void RubikCube::displayFaces() {
                 vec3d normal = getNormal(projTri);
                 normalize(normal);
 
-                if (dot(normal, projTri.p[0] - camera.getFront()) < 0.0f) {
+                if (dot(normal, projTri.p[0] - camera.getFront()) < 0.0f)
+                {
                     projTri.col = face.color;
                     toRender.push_back(projTri);
                 }
