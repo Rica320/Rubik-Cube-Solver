@@ -29,6 +29,9 @@ protected:
     mat4x4 projMat;
     mat4x4 viewMat;
 
+    float fTheta = 0.0f;
+    double elapsedTime = 0.0;
+
 };
 
 
