@@ -43,6 +43,9 @@ int RubikCube::windowLoop() {
 
         viewMat = lookAt(camera.getPos(), camera.getPos() + camera.getFront(), camera.getUp());
 
+        /* DRAW REFERENTIAL*/
+        drawReferential();
+
         displayFaces();
 
         camera.processInput(window, elapsedTime); // change ... the sort is fine but time is money
@@ -69,7 +72,7 @@ RubikCube::RubikCube() : GameEngine(1920.0f, 1080.0f, "Rubik Solver"){ // TODO: 
         }
     }
 
-    camera = Camera({ 0.0f,  18.0f, 0.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,1.0f,0.0f }, screenWidth, screenHeight);
+    camera = Camera({ 0.0f,  8.0f, -5.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,1.0f,0.0f }, screenWidth, screenHeight);
 
     projMat = Matrix_Projection(screenHeight, screenWidth);
 
@@ -331,4 +334,37 @@ void RubikCube::displayFaces() {
             drawTriangle(t);
         }
     }
+}
+
+void RubikCube::drawReferential() { // TODO: CHANGE -- maybe put on game engine
+    static vec3d Ox{5.0f, 0.0f, 0.0f}, Oy{0.0f, 5.0f, 0.0f}, Oz{0.0f,0.0f,5.0f}, origin{};
+
+    vec3d viewOx,viewOy, viewOz, viewOO;
+    vec3d projOx,projOy, projOz, projOO;
+
+    MultiplyMatrixVector(Ox, viewOx, viewMat);
+    MultiplyMatrixVector(Oy, viewOy, viewMat);
+    MultiplyMatrixVector(Oz, viewOz, viewMat);
+    MultiplyMatrixVector(origin, viewOO, viewMat);
+
+    MultiplyMatrixVector(viewOx, projOx, projMat);
+    MultiplyMatrixVector(viewOy, projOy, projMat);
+    MultiplyMatrixVector(viewOz, projOz, projMat);
+    MultiplyMatrixVector(viewOO, projOO, projMat);
+
+
+    //drawing lines
+    glLineWidth(1.0);
+    glBegin(GL_LINES);
+    glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+    glVertex2f(projOO.x,projOO.y); glVertex2f(projOx.x, projOx.y);
+    glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
+    glVertex2f(projOO.x,projOO.y); glVertex2f(projOy.x, projOy.y);
+    glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+    glVertex2f(projOO.x,projOO.y); glVertex2f(projOz.x, projOz.y);
+    glEnd();
+    glLineWidth(10.0);
+
+
+
 }

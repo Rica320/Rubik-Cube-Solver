@@ -23,6 +23,7 @@ public:
     int windowLoop() override;
     void drawTriangle(const triangle& tri) override;
     void displayFaces();
+    void drawReferential();
 private:
     char cubeMapping[3][3][3]{}; // TODO: MAKE IT CLEAN
     char mapNormalToColor(const vec3d& normal) const;
