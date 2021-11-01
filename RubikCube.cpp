@@ -75,7 +75,7 @@ RubikCube::RubikCube() : GameEngine(1920.0f, 1080.0f, "Rubik Solver"){ // TODO: 
         }
     }
 
-    camera = Camera({ 0.0f,  8.0f, -5.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,1.0f,0.0f }, screenWidth, screenHeight);
+    camera = Camera({ 5.0f,  5.0f, 5.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,1.0f,0.0f }, screenWidth, screenHeight);
 
     projMat = Matrix_Projection(screenHeight, screenWidth);
 
@@ -573,8 +573,9 @@ void RubikCube::changeZDimension() {
  */
 
 void RubikCube::changeYDimension() {
-    static int dY[3][3] = {{2, 1, 0 }, {1, 0, -1}, {0, -1, -2}};
-    static int dZ[3][3] = {{0, -1, -2 }, {1, 0, -1}, {2, 1, 0}};
+
+    static int dX[3][3] = {{0, 1, 2 }, { -1 , 0,  1}, { -2 , -1,   0 }};
+    static int dZ[3][3] = {{2, 1, 0 }, { 1 ,  0, -1}, { 0 ,  -1,  -2 }};
 
     // the axis corresponds to the parallel in the cubeMapping
 
@@ -594,10 +595,9 @@ void RubikCube::changeYDimension() {
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
-            cubeMapping[(int)i + dY[i][j]][(int)j + dZ[i][j]][(int)dimBeingMoved] = prevArray[i][j][(int)dimBeingMoved];
+            cubeMapping[(int)i + dX[i][j]][(int)j + dZ[i][j]][(int)dimBeingMoved] = prevArray[i][j][(int)dimBeingMoved];
         }
     }
-
 }
 
 void RubikCube::changeZDimension() {
