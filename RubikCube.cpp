@@ -3,7 +3,8 @@
 //
 
 #include "RubikCube.h"
-#include "iostream"
+
+int RubikCube::maxShuffle = rand() % 15 + 10;
 
 int RubikCube::windowLoop() {
     GLFWwindow* window;
@@ -80,6 +81,7 @@ RubikCube::RubikCube() : GameEngine(1920.0f, 1080.0f, "Rubik Solver"){ // TODO: 
     projMat = Matrix_Projection(screenHeight, screenWidth);
 
     createFaces();
+
 }
 
 char RubikCube::mapNormalToColor(const vec3d& normal) const{
@@ -393,6 +395,11 @@ void RubikCube::drawReferential() const { // TODO: CHANGE -- maybe put on game e
 } // TODO: DO THE CLIPPING
 
 void RubikCube::shuffleCube() {
+
+    if ( !RubikCube::maxShuffle) {
+        axisInMovement = STOP_SHUFFLE; // STOP
+        return;
+    }
     if (!inMovement) {
         dimBeingMoved = (char) (std::rand() % 3);
         axisInMovement = (char) (std::rand() % 3);
@@ -418,6 +425,7 @@ void RubikCube::makeMoveX(triangle& tri, char id) { // TODO: LET MAKE A MOVE THA
         else {
             fTheta = 0;
             inMovement = false;
+            RubikCube::maxShuffle--;
         }
     }
 // TODO: ADD DEBUG
@@ -433,6 +441,7 @@ void RubikCube::makeMoveY(triangle& tri, char id) {
         else {
             fTheta = 0;
             inMovement = false;
+            RubikCube::maxShuffle--;
         }
     }
 }
@@ -447,6 +456,7 @@ void RubikCube::makeMoveZ(triangle& tri, char id) {
         else {
             fTheta = 0.0f;
             inMovement = false;
+            RubikCube::maxShuffle--;
         }
     }
 }
@@ -486,91 +496,6 @@ char RubikCube::getZdimension(char id) {
     }
     return -1;
 }
-
-/*
-void RubikCube::changeXDimension() {
-    static int dY[3][3] = {{2, 1, 0 }, {1, 0, -1}, {0, -1, -2}};
-    static int dZ[3][3] = {{0, -1, -2 }, {1, 0, -1}, {2, 1, 0}};
-
-    // the axis corresponds to the parallel in the cubeMapping
-
-    char prevArray[3][3][3];
-
-    //copying
-    for(int i = 0; i < 3; i++)
-    {
-        for(int j = 0; j < 3; j++)
-        {
-            for(int k = 0; k < 3; k++)
-            {
-                prevArray[i][j][k] = cubeMapping[i][j][k];
-            }
-        }
-    }
-
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            cubeMapping[(int)i + dY[i][j]][(int)j + dZ[i][j]][(int)dimBeingMoved] = prevArray[i][j][(int)dimBeingMoved];
-        }
-    }
-
-}
-
-void RubikCube::changeYDimension() {
-    static int dX[3][3] = {{2,1,0}, {1, 0, -1}, {0, -1, -2}};
-    static int dY[3][3] = {{0,-1,-2}, {1, 0, -1}, {2, 1, 0}};
-
-    // the axis corresponds to the parallel in the cubeMapping
-
-    char prevArray[3][3][3];
-
-    //copying
-    for(int i = 0; i < 3; i++)
-    {
-        for(int j = 0; j < 3; j++)
-        {
-            for(int k = 0; k < 3; k++)
-            {
-                prevArray[i][j][k] = cubeMapping[i][j][k];
-            }
-        }
-    }
-
-    for (int i = 0; i < 3; ++i) {
-        for (int j = 0; j < 3; ++j) {
-            cubeMapping[(int)dimBeingMoved][(int)(i) + dX[i][j]][(int)j + dY[i][j]] = prevArray[(int)dimBeingMoved][i][j];
-        }
-    }
-}
-
-void RubikCube::changeZDimension() {
-    static int dX[3][3] = {{0, 1, 2 }, {-1, 0, 1}, {-2, -1, 0}};
-    static int dY[3][3] = {{2, 1, 0 }, {1, 0, -1}, { 0, -1, -2}};
-
-    // the axis corresponds to the parallel in the cubeMapping
-
-    char prevArray[3][3][3];
-
-    //copying
-    for(int i = 0; i < 3; i++)
-    {
-        for(int j = 0; j < 3; j++)
-        {
-            for(int k = 0; k < 3; k++)
-            {
-                prevArray[i][j][k] = cubeMapping[i][j][k];
-            }
-        }
-    }
-
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            cubeMapping[(int)i + dX[i][j]][(int)dimBeingMoved][(int)j + dY[i][j]] = prevArray[i][(int)dimBeingMoved][j];
-        }
-    }
-}
-
- */
 
 void RubikCube::changeYDimension() {
 

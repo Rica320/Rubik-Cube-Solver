@@ -6,6 +6,7 @@
 #define RUBIK_CUBE_SOLVER_RUBIKCUBE_H
 
 #define _USE_MATH_DEFINES
+#define STOP_SHUFFLE -1;
 
 #include "GameEngine.h"
 #include "Mat.h"
@@ -53,6 +54,7 @@ private:
     bool inMovement = false;
     char dimBeingMoved = NULL;
     char axisInMovement = NULL;
+    static int maxShuffle;
 
 };
 
