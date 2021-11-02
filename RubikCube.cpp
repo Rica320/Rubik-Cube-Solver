@@ -4,7 +4,7 @@
 
 #include "RubikCube.h"
 
-int RubikCube::maxShuffle = rand() % 15 + 10;
+int RubikCube::maxShuffle = rand() % 15 + 40;
 
 int RubikCube::windowLoop() {
     GLFWwindow* window;
@@ -35,7 +35,6 @@ int RubikCube::windowLoop() {
 
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
-
 
         static double first_time = glfwGetTime();
         double last_time = glfwGetTime();
