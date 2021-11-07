@@ -33,7 +33,7 @@ public:
     int windowLoop() override;
     void drawTriangle(const triangle& tri) override;
     void displayFaces();
-    void drawReferential() const;
+    void drawReferential() const override;
     void shuffleCube();
     void makeMoveX(triangle& tri, char id);
     void makeMoveY(triangle& tri, char id);

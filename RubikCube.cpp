@@ -3,6 +3,7 @@
 //
 
 #include "RubikCube.h"
+#include "iostream"
 
 int RubikCube::maxShuffle = rand() % 15 + 40;
 
@@ -27,6 +28,8 @@ int RubikCube::windowLoop() {
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+    RubikCubeSolver solver(cubeMapping);
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -50,6 +53,8 @@ int RubikCube::windowLoop() {
         displayFaces();
 
         camera.processInput(window, elapsedTime); // change ... the sort is fine but time is money
+
+        std::cout << solver.isSolved(cubeMapping);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
@@ -76,14 +81,14 @@ RubikCube::RubikCube() : GameEngine(1920.0f, 1080.0f, "Rubik Solver"){ // TODO: 
     }
 
     camera = Camera({ 5.0f,  5.0f, 5.0f }, { 0.0f,0.0f,1.0f }, { 0.0f,1.0f,0.0f }, screenWidth, screenHeight);
-
+    // TODO : CHANGE CAMERA UP AND FRONT (see if it makes sense in this case)
     projMat = Matrix_Projection(screenHeight, screenWidth);
 
     createFaces();
 
 }
 
-char RubikCube::mapNormalToColor(const vec3d& normal) const{
+char RubikCube::mapNormalToColor(const vec3d& normal) const{ // TODO: USE THIS THEN WHEN MAKING THE SOLVER ARRAYS
 
     if(normal.x <= -1.0f)
         return 'R';
@@ -105,8 +110,7 @@ void RubikCube::createFaces() {
         for (int j=0; j < 3; j++) {
             for (int k=0; k < 3; k++) {
 
-                /*
-                if (i == 0) {
+                {
                     Face aFace{ triangle{ 0.0f + j, 0.0f + k, 0.0f + i, 1 ,    0.0f + j, 1.0f + k, 0.0f + i, 1,    1.0f + j, 1.0f + k, 0.0f + i ,1 },
                                 triangle{ 0.0f + j, 0.0f + k, 0.0f + i, 1 ,    1.0f + j, 1.0f + k, 0.0f + i, 1,    1.0f + j, 0.0f + k, 0.0f + i ,1 } };
 
@@ -115,67 +119,8 @@ void RubikCube::createFaces() {
 
                     vFaces.push_back(aFace);
 
-                } else if (i == 2) {
-                    Face aFace{ triangle{ 1.0f + j, 0.0f + k, 1.0f + i, 1 ,    1.0f + j, 1.0f + k, 1.0f + i, 1,    0.0f + j, 1.0f + k, 1.0f + i ,1 },
-                                triangle{ 1.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 1.0f + k, 1.0f + i, 1,    0.0f + j, 0.0f + k, 1.0f + i ,1 } };
-
-                    aFace.id = cubeMapping[i][j][k];
-                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
-
-                    vFaces.push_back(aFace);
-
                 }
-
-                if ( j == 0 ) {
-                    Face aFace{ triangle{ 1.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 0.0f + k, 1.0f + i, 1,    0.0f + j, 0.0f + k, 0.0f + i ,1 },
-                                triangle{ 1.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 0.0f + k, 0.0f + i, 1,    1.0f + j, 0.0f + k, 0.0f + i ,1 } };
-
-                    aFace.id = cubeMapping[i][j][k];
-                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
-
-                    vFaces.push_back(aFace);
-                } else if( j == 2) {
-                    Face aFace{ triangle{ 0.0f + j, 1.0f + k, 0.0f + i, 1 ,    0.0f + j, 1.0f + k, 1.0f + i, 1,    1.0f + j, 1.0f + k, 1.0f + i ,1 },
-                                triangle{ 0.0f + j, 1.0f + k, 0.0f + i, 1 ,    1.0f + j, 1.0f + k, 1.0f + i, 1,    1.0f + j, 1.0f + k, 0.0f + i ,1 } };
-
-                    aFace.id = cubeMapping[i][j][k];
-                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
-
-                    vFaces.push_back(aFace);
-                }
-
-                if ( k == 0) {
-                    Face aFace{ triangle{ 0.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 1.0f + k, 1.0f + i, 1,    0.0f + j, 1.0f + k, 0.0f + i ,1 },
-                                triangle{ 0.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 1.0f + k, 0.0f + i, 1,    0.0f + j, 0.0f + k, 0.0f + i ,1 } };
-
-                    aFace.id = cubeMapping[i][j][k];
-                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
-
-                    vFaces.push_back(aFace);
-                }else if ( k == 2) {
-                    Face aFace{ triangle{ 1.0f + j, 0.0f + k, 0.0f + i, 1 ,    1.0f + j, 1.0f + k, 0.0f + i, 1,    1.0f + j, 1.0f + k, 1.0f + i ,1 },
-                                triangle{ 1.0f + j, 0.0f + k, 0.0f + i, 1 ,    1.0f + j, 1.0f + k, 1.0f + i, 1,    1.0f + j, 0.0f + k, 1.0f + i ,1 } };
-
-                    aFace.id = cubeMapping[i][j][k];
-                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
-
-                    vFaces.push_back(aFace);
-                }
-                 */
-                // TODO: SOMETHING IS WRONG ABOVE
-
-
-
-               {
-                    Face aFace{ triangle{ 0.0f + j, 0.0f + k, 0.0f + i, 1 ,    0.0f + j, 1.0f + k, 0.0f + i, 1,    1.0f + j, 1.0f + k, 0.0f + i ,1 },
-                                triangle{ 0.0f + j, 0.0f + k, 0.0f + i, 1 ,    1.0f + j, 1.0f + k, 0.0f + i, 1,    1.0f + j, 0.0f + k, 0.0f + i ,1 } };
-
-                    aFace.id = cubeMapping[i][j][k];
-                    aFace.color = getColor(mapNormalToColor(getNormal(aFace.tri[0])));
-
-                    vFaces.push_back(aFace);
-
-                }  {
+                {
                     Face aFace{ triangle{ 1.0f + j, 0.0f + k, 1.0f + i, 1 ,    1.0f + j, 1.0f + k, 1.0f + i, 1,    0.0f + j, 1.0f + k, 1.0f + i ,1 },
                                 triangle{ 1.0f + j, 0.0f + k, 1.0f + i, 1 ,    0.0f + j, 1.0f + k, 1.0f + i, 1,    0.0f + j, 0.0f + k, 1.0f + i ,1 } };
 
@@ -221,7 +166,6 @@ void RubikCube::createFaces() {
 
                     vFaces.push_back(aFace);
                 }
-
             }
         }
     }
@@ -291,8 +235,6 @@ void RubikCube::displayFaces() {
             }else if(axisInMovement == (char) 0 ) {
                 makeMoveZ(tri,face.id);
             }
-
-            // TODO: the above as a problem related to the dim changing
 
             viewedTri = tri * viewMat;
 

@@ -7,6 +7,7 @@
 
 #include "Mat.h"
 #include "lib/Camera/Camera.h"
+#include "RubikCubeSolver.h"
 
 #include "GLFW/glfw3.h"
 #include <string>
@@ -18,7 +19,7 @@ public:
 
     virtual void drawTriangle(const triangle& tri);
     virtual int windowLoop();
-
+    virtual void drawReferential() const {};
 
 
 protected:

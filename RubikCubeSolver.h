@@ -6,21 +6,40 @@
 #define RUBIK_CUBE_SOLVER_RUBIKCUBESOLVER_H
 
 #include <vector>
-#include "RubikCube.h"
+#include "array"
+
+enum Movement {
+    U,
+    D,
+    L,
+    R,
+    F,
+    B
+};
 
 class RubikCubeSolver {
 public:
-    bool isSolved(char cubeMapping[3][3][3], std::vector<Face> vFaces) const;
+    explicit RubikCubeSolver(char cubeInitialMapping[3][3][3]); // the intial state
+
+
+    bool isSolved(char cubeMapping[3][3][3]);
 
 private:
-    char redFace[3][3];
-    char orangeFace[3][3];
-    char blueFace[3][3];
-    char whiteFace[3][3];
-    char yellowFace[3][3];
-    char greenFace[3][3];
 
+    void getFaces(char cubeMapping[3][3][3]);
+
+    std::array<std::array<char, 3>, 3> redFace;
+    std::array<std::array<char, 3>, 3> orangeFace;
+    std::array<std::array<char, 3>, 3> blueFace;
+    std::array<std::array<char, 3>, 3> whiteFace;
+    std::array<std::array<char, 3>, 3> yellowFace;
+    std::array<std::array<char, 3>, 3> greenFace;
+    std::array<std::array<char, 3>, 3> rRedFace;
+    std::array<std::array<char, 3>, 3> rOrangeFace;
+    std::array<std::array<char, 3>, 3> rBlueFace;
+    std::array<std::array<char, 3>, 3> rWhiteFace;
+    std::array<std::array<char, 3>, 3> rYellowFace;
+    std::array<std::array<char, 3>, 3> rGreenFace;
 };
-
 
 #endif //RUBIK_CUBE_SOLVER_RUBIKCUBESOLVER_H
