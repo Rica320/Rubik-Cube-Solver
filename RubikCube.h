@@ -10,7 +10,7 @@
 
 #include "GameEngine.h"
 #include "Mat.h"
-// #include "RubikCubeSolver.h"
+#include "RubikCubeSolver.h"
 
 #include <list>
 #include <vector>
@@ -38,6 +38,7 @@ public:
     void makeMoveX(triangle& tri, char id);
     void makeMoveY(triangle& tri, char id);
     void makeMoveZ(triangle& tri, char id);
+    void makeMove(Movement move);
     char getXdimension(char id);
     char getYdimension(char id);
     char getZdimension(char id);
@@ -52,9 +53,14 @@ private:
     vec4d getColor(char color);
 
     std::vector<Face> vFaces;
+    RubikCubeSolver solver;
+
     bool inMovement = false;
     char dimBeingMoved = NULL;
     char axisInMovement = NULL;
+
+
+
     static int maxShuffle;
 
 };

@@ -28,8 +28,6 @@ int RubikCube::windowLoop() {
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    RubikCubeSolver solver(cubeMapping);
-
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -85,6 +83,8 @@ RubikCube::RubikCube() : GameEngine(1920.0f, 1080.0f, "Rubik Solver"){ // TODO: 
     projMat = Matrix_Projection(screenHeight, screenWidth);
 
     createFaces();
+
+    solver = RubikCubeSolver(cubeMapping);
 
 }
 
@@ -223,11 +223,16 @@ void RubikCube::displayFaces() {
 
     fTheta += 1.0f * elapsedTime; // TODO: MAGIC NUMBER
 
-    shuffleCube();
+    // shuffleCube();
+    if(!inMovement)
+        makeMove(solver.getNextMove());
+    // makemove(getSolverMove ...)
 
     for(auto &face:vFaces) {
         for( auto & tri: face.tri) {
 
+
+            // TODO: MAKE IT CLEANER
             if(axisInMovement == (char) 2 ) {
                 makeMoveX(tri,face.id);
             } else if (axisInMovement == (char) 1) {
@@ -256,6 +261,9 @@ void RubikCube::displayFaces() {
         }
     }
 
+    // updating the cubeMapping --- A silent bug if the cube does not move
+
+    /*
     if(axisInMovement == (char) 2 && !inMovement) {
         changeXDimension();
     } else if (axisInMovement == (char) 1 && !inMovement) {
@@ -263,6 +271,7 @@ void RubikCube::displayFaces() {
     }else if(axisInMovement == (char) 0   && !inMovement ) {
         changeZDimension();
     }
+    */
 
     sort(toRender.rbegin(), toRender.rend(), [](triangle& t1, triangle& t2)
     {
@@ -349,7 +358,7 @@ void RubikCube::shuffleCube() {
 }
 
 void RubikCube::makeMoveX(triangle& tri, char id) { // TODO: LET MAKE A MOVE THAT'S MORE THAN 90 DEGREES
-    if(getXdimension(id) == dimBeingMoved) {
+    if(getXdimension(id) == dimBeingMoved && inMovement) {
         if (fTheta <= M_PI / 2.0f) {// TODO: MAGIC NUMBER
             // NOTE: AS THE CUBE IS NOT CENTERED IN THE AXIS
             tri = tri * Translate(0.0f, -1.5f, -1.5f);
@@ -365,15 +374,27 @@ void RubikCube::makeMoveX(triangle& tri, char id) { // TODO: LET MAKE A MOVE THA
         } // still a slight error in the final angle compared to the 90 degrees
         else {
             fTheta = 0;
-            inMovement = false;
-            RubikCube::maxShuffle--;
+            inMovement = false; // here is the bug
+            RubikCube::maxShuffle--; // this should not be here...
+            tri.p[0].x = std::round(tri.p[0].x);
+            tri.p[0].y = std::round(tri.p[0].y);
+            tri.p[0].z = std::round(tri.p[0].z);
+
+            tri.p[1].x = std::round(tri.p[1].x);
+            tri.p[1].y = std::round(tri.p[1].y);
+            tri.p[1].z = std::round(tri.p[1].z);
+
+            tri.p[2].x = std::round(tri.p[2].x);
+            tri.p[2].y = std::round(tri.p[2].y);
+            tri.p[2].z = std::round(tri.p[2].z); // It works but is not quite well --- the bug above
+            changeXDimension();
         }
     }
 // TODO: ADD DEBUG
 }// https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
 
 void RubikCube::makeMoveY(triangle& tri, char id) {
-    if(getYdimension(id) == dimBeingMoved) {
+    if(getYdimension(id) == dimBeingMoved && inMovement) {
         if (fTheta <= M_PI / 2.0f) {// TODO: MAGIC NUMBER
             tri = tri * Translate(-1.5f, 0.0f, -1.5f);
             tri = tri * Matrix_MakeRotationY((float) elapsedTime);
@@ -383,12 +404,25 @@ void RubikCube::makeMoveY(triangle& tri, char id) {
             fTheta = 0;
             inMovement = false;
             RubikCube::maxShuffle--;
+            tri.p[0].x = std::round(tri.p[0].x);
+            tri.p[0].y = std::round(tri.p[0].y);
+            tri.p[0].z = std::round(tri.p[0].z);
+
+            tri.p[1].x = std::round(tri.p[1].x);
+            tri.p[1].y = std::round(tri.p[1].y);
+            tri.p[1].z = std::round(tri.p[1].z);
+
+            tri.p[2].x = std::round(tri.p[2].x);
+            tri.p[2].y = std::round(tri.p[2].y);
+            tri.p[2].z = std::round(tri.p[2].z);
+            changeYDimension();
+
         }
     }
 }
 
 void RubikCube::makeMoveZ(triangle& tri, char id) {
-    if(getZdimension(id) == dimBeingMoved) {
+    if(getZdimension(id) == dimBeingMoved && inMovement) {
         if (fTheta <= M_PI / 2.0f) {// TODO: MAGIC NUMBER
             tri = tri * Translate(-1.5f, -1.5f, 0.0f);
             tri = tri * Matrix_MakeRotationZ((float) elapsedTime);
@@ -398,11 +432,24 @@ void RubikCube::makeMoveZ(triangle& tri, char id) {
             fTheta = 0.0f;
             inMovement = false;
             RubikCube::maxShuffle--;
+            tri.p[0].x = std::round(tri.p[0].x);
+            tri.p[0].y = std::round(tri.p[0].y);
+            tri.p[0].z = std::round(tri.p[0].z);
+
+            tri.p[1].x = std::round(tri.p[1].x);
+            tri.p[1].y = std::round(tri.p[1].y);
+            tri.p[1].z = std::round(tri.p[1].z);
+
+            tri.p[2].x = std::round(tri.p[2].x);
+            tri.p[2].y = std::round(tri.p[2].y);
+            tri.p[2].z = std::round(tri.p[2].z);
+            changeZDimension();
+
         }
     }
 }
 
-char RubikCube::getXdimension(char id) { // TODO: SEE IF IS RIGHT - IT WAS NOT :))
+char RubikCube::getXdimension(char id) { // TODO: Try to get rid of this annoying getDimensions
     for (auto & i : cubeMapping) {
         for (int j=0; j < 3; j++) {
             for (int k=0; k < 3; k++) {
@@ -518,4 +565,61 @@ void RubikCube::changeXDimension() {
             cubeMapping[(int)i + dX[i][j]][(int)dimBeingMoved][(int)j + dY[i][j]] = prevArray[i][(int)dimBeingMoved][j];
         }
     }
+}
+
+void RubikCube::makeMove(Movement move) { // the moves notation will be interpreted in the camera direction 0 (initial pos)
+    if(move == F) {
+        dimBeingMoved =  2;
+        axisInMovement = 0;
+        inMovement = true;
+    }
+    else if(move == Bc) {
+        dimBeingMoved =  0;
+        axisInMovement = 0;
+        inMovement = true;
+    }
+    else if(move == Rc) {
+        dimBeingMoved =  0;
+        axisInMovement = 2;
+        inMovement = true;
+    }
+    else if(move == L) {
+        dimBeingMoved =  2;
+        axisInMovement = 2;
+        inMovement = true;
+    }
+    else if(move == Uc) {
+        dimBeingMoved =  2;
+        axisInMovement = 1;
+        inMovement = true;
+    }
+    else if(move == D) {
+        dimBeingMoved =  0;
+        axisInMovement = 1;
+        inMovement = true;
+    } else {
+        // not valid Move
+
+    }
+
+    // switch ...
+
+    /*
+    switch (move) {
+        case F:
+            break;
+        case Bc:
+            break;
+        case Rc:
+            break;
+        case L:
+            break;
+        case Uc:
+            break;
+        case D:
+            break;
+        default:
+            break;
+    }*/
+
 }

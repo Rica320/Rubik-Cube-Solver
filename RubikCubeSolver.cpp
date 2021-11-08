@@ -3,7 +3,6 @@
 //
 
 #include "RubikCubeSolver.h"
-#include "iostream"
 
 bool RubikCubeSolver::isSolved(char cubeMapping[3][3][3]){
     getFaces(cubeMapping);
@@ -100,3 +99,12 @@ void RubikCubeSolver::getFaces(char (*cubeMapping)[3][3]) {
         }
     }
 }
+
+Movement RubikCubeSolver::getNextMove() {
+    if(movesToSolve.empty())
+        return StayTheSame;
+    Movement m = movesToSolve.front();
+    movesToSolve.pop_front();
+    return m;
+}
+
