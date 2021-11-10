@@ -5,7 +5,8 @@
 #include "RubikCube.h"
 #include "iostream"
 
-int RubikCube::maxShuffle = rand() % 15 + 40;
+// int RubikCube::maxShuffle = rand() % 15 + 40;
+int RubikCube::maxShuffle = 2;
 
 int RubikCube::windowLoop() {
     GLFWwindow* window;
@@ -223,16 +224,15 @@ void RubikCube::displayFaces() {
 
     fTheta += 1.0f * elapsedTime; // TODO: MAGIC NUMBER
 
-    // shuffleCube();
-    if(!inMovement)
+    shuffleCube();
+    if(!inMovement && !RubikCube::maxShuffle) { // axisInMovement ==(char)STOP_SHUFFLE
         makeMove(solver.getNextMove());
-    // makemove(getSolverMove ...)
+    }
 
     for(auto &face:vFaces) {
         for( auto & tri: face.tri) {
 
-
-            // TODO: MAKE IT CLEANER
+            // TODO: MAKE IT CLEANER --- it controls which move is being moved
             if(axisInMovement == (char) 2 ) {
                 makeMoveX(tri,face.id);
             } else if (axisInMovement == (char) 1) {
@@ -346,14 +346,16 @@ void RubikCube::drawReferential() const { // TODO: CHANGE -- maybe put on game e
 
 void RubikCube::shuffleCube() {
 
-    if ( !RubikCube::maxShuffle) {
+    if ( !RubikCube::maxShuffle && !inMovement) {
         axisInMovement = STOP_SHUFFLE; // STOP
+        dimBeingMoved = STOP_SHUFFLE; // kinda useless
         return;
     }
     if (!inMovement) {
         dimBeingMoved = (char) (std::rand() % 3);
         axisInMovement = (char) (std::rand() % 3);
         inMovement = true;
+        //RubikCube::maxShuffle = (RubikCube::maxShuffle > 0)? RubikCube::maxShuffle-1 : 0;
     }
 }
 
@@ -375,7 +377,7 @@ void RubikCube::makeMoveX(triangle& tri, char id) { // TODO: LET MAKE A MOVE THA
         else {
             fTheta = 0;
             inMovement = false; // here is the bug
-            RubikCube::maxShuffle--; // this should not be here...
+            RubikCube::maxShuffle = (RubikCube::maxShuffle > 0)? RubikCube::maxShuffle-1 : 0;
             tri.p[0].x = std::round(tri.p[0].x);
             tri.p[0].y = std::round(tri.p[0].y);
             tri.p[0].z = std::round(tri.p[0].z);
@@ -403,7 +405,7 @@ void RubikCube::makeMoveY(triangle& tri, char id) {
         else {
             fTheta = 0;
             inMovement = false;
-            RubikCube::maxShuffle--;
+            RubikCube::maxShuffle = (RubikCube::maxShuffle > 0)? RubikCube::maxShuffle-1 : 0;
             tri.p[0].x = std::round(tri.p[0].x);
             tri.p[0].y = std::round(tri.p[0].y);
             tri.p[0].z = std::round(tri.p[0].z);
@@ -431,7 +433,7 @@ void RubikCube::makeMoveZ(triangle& tri, char id) {
         else {
             fTheta = 0.0f;
             inMovement = false;
-            RubikCube::maxShuffle--;
+            RubikCube::maxShuffle = (RubikCube::maxShuffle > 0)? RubikCube::maxShuffle-1 : 0;
             tri.p[0].x = std::round(tri.p[0].x);
             tri.p[0].y = std::round(tri.p[0].y);
             tri.p[0].z = std::round(tri.p[0].z);
